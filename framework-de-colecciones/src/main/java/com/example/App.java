@@ -3,9 +3,12 @@ package com.example;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.Set;
@@ -54,11 +57,11 @@ public class App {
 		 */
 
 		Persona persona1 = Persona.builder().nombre("Maria").apellido1("lopez").apellido2("fernandes")
-				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(1985, Month.OCTOBER, 12))
+				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(1985, Month.OCTOBER, 22))
 				.salario(new BigDecimal(4500)).build();
 
 		Persona persona2 = Persona.builder().nombre("Maria").apellido1("flores").apellido2("Martinez")
-				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(1966, Month.FEBRUARY, 02))
+				.genero(Genero.MUJER).fechaNacimiento(LocalDate.of(1966, Month.FEBRUARY, 21))
 				.salario(new BigDecimal(6000)).build();
 
 		Persona persona3 = Persona.builder().nombre("Luis").apellido1("Acaro").apellido2("Silva").genero(Genero.HOMBRE)
@@ -228,204 +231,230 @@ public class App {
 //			}
 //
 //		});
-		
-		/* Si la interface que se va a implementar con una clase anonima es una 
-		* interfaz funcional, utilizar una clase anonima es todavia EXCESIVO,
-		* demasiado codigo, pues 
-		* ¿Que se utiliza entonces? Se utiliza una EXPRESION LAMBDA 
-		* 
-		* ¿Que es una expresion lambda?
-		* 
-		* Es como un metodo anonimo, se utiliza para pasar a un metodo la implementacion
-		* del unico metodo abstracto que hay que implementar.
-		* 
-		* A continuacion la sintaxis de una expresion lambda */
-		
-		OptionalDouble optionalDelSalarioPromedio = flujoDePersonas
-				.filter(p -> p.genero().equals(Genero.MUJER))
-				.mapToDouble(persona -> persona.salario().doubleValue())
-				.average();
 
-				/* ¿Que es un Optional? El tipo de dato Optional es una de las maravillas de las
-				* versiones mas recientes de Java, surgue en la version 8 de Java.
-				* El tipo Optional te proteje del temido NullPointerException, es decir, que tu
-				* intentes trabajar con un objeto y este tome el valor NULL, y el problema es que
-				* cuando en una operacion interviene un null todo se vuelve NULL.
-	* 
-* Finalmente, el tipo Optional hay que verlo como una cajita de sorpresa, donde
-* puede venir el resultado esperado, que seria el salario promedio en este caso,
-* o seria un valor NULL porque el promedio no se pudo calcular, porque ninguna de 
-* las personas del genero MUJER tenian salario */
+		/*
+		 * Si la interface que se va a implementar con una clase anonima es una interfaz
+		 * funcional, utilizar una clase anonima es todavia EXCESIVO, demasiado codigo,
+		 * pues ¿Que se utiliza entonces? Se utiliza una EXPRESION LAMBDA
+		 * 
+		 * ¿Que es una expresion lambda?
+		 * 
+		 * Es como un metodo anonimo, se utiliza para pasar a un metodo la
+		 * implementacion del unico metodo abstracto que hay que implementar.
+		 * 
+		 * A continuacion la sintaxis de una expresion lambda
+		 */
 
-if (optionalDelSalarioPromedio.isPresent()) {
+		OptionalDouble optionalDelSalarioPromedio = flujoDePersonas.filter(p -> p.genero().equals(Genero.MUJER))
+				.mapToDouble(persona -> persona.salario().doubleValue()).average();
+
+		/*
+		 * ¿Que es un Optional? El tipo de dato Optional es una de las maravillas de las
+		 * versiones mas recientes de Java, surgue en la version 8 de Java. El tipo
+		 * Optional te proteje del temido NullPointerException, es decir, que tu
+		 * intentes trabajar con un objeto y este tome el valor NULL, y el problema es
+		 * que cuando en una operacion interviene un null todo se vuelve NULL.
+		 * 
+		 * Finalmente, el tipo Optional hay que verlo como una cajita de sorpresa, donde
+		 * puede venir el resultado esperado, que seria el salario promedio en este
+		 * caso, o seria un valor NULL porque el promedio no se pudo calcular, porque
+		 * ninguna de las personas del genero MUJER tenian salario
+		 */
+
+		if (optionalDelSalarioPromedio.isPresent()) {
 
 // De la cajita del Optional puedo extraer el salario promedio
 // sin ningun peligro
 
-double salarioPromedio = optionalDelSalarioPromedio.getAsDouble();
+			double salarioPromedio = optionalDelSalarioPromedio.getAsDouble();
 
-System.out.println("El salario promedio es: " + salarioPromedio);
+			System.out.println("El salario promedio es: " + salarioPromedio);
 
-/* Ejemplo # 1 del Miercoles 24 de Junio.
-* 
-* Utilizando Operaciones de Agregado, recorrer las lista de personas y 
-* obtener una nueva coleccion que contenga solamente los nombres de las
-* personas, pero sin duplicados */
+			/*
+			 * Ejemplo # 1 del Miercoles 24 de Junio.
+			 * 
+			 * Utilizando Operaciones de Agregado, recorrer las lista de personas y obtener
+			 * una nueva coleccion que contenga solamente los nombres de las personas, pero
+			 * sin duplicados
+			 */
 
-Set<String> nombresSinDuplicados = personas.stream()
-	.map(p -> p.nombre())
-	.collect(Collectors.toSet());
+			Set<String> nombresSinDuplicados = personas.stream().map(p -> p.nombre()).collect(Collectors.toSet());
 
+			/*
+			 * Si al final de la tuberia se quiere obtener una nueva coleccion , la
+			 * operacion terminal tiene que ser el metodo collect(), que recibe la
+			 * implementacion de la interfaz Collector a traves de una clase que tiene el
+			 * mismo nombre pero en plural, Collectors en este caso, que tendra a su vez
+			 * metodos estaticos, en la propia clase Collectors para trabajar con los
+			 * elementos que se colectan al final de la tuberia
+			 */
 
-/* Si al final de la tuberia se quiere obtener una nueva coleccion
-* , la operacion terminal tiene que ser el metodo collect(), que recibe la 
-* implementacion de la interfaz Collector a traves de una clase que tiene
-* el mismo nombre pero en plural, Collectors en este caso, que tendra a su vez
-* metodos estaticos, en la propia clase Collectors para trabajar con los elementos
-* que se colectan al final de la tuberia */
+			/*
+			 * Cuando la expresion lambda lo unico que hace es llamar al metodo que es quien
+			 * realmente hace el trabajo, utilizar una expresion lambda es poco eficiente y
+			 * redundante, por lo cual lo mejor es que el propio metodo haga el trabajo, sin
+			 * ningun intermediario, es decir que lo correcto es pasar el metodo por
+			 * referencia
+			 */
 
-/* Cuando la expresion lambda lo unico que hace es llamar al metodo que es 
-* quien realmente hace el trabajo, utilizar una expresion lambda es poco 
-* eficiente y redundante, por lo cual lo mejor es que el propio metodo haga 
-* el trabajo, sin ningun intermediario, es decir que lo correcto es pasar 
-* el metodo por referencia */
-
-Set<String> nombresSinDuplicados2 = personas.stream()
-	.map(Persona::nombre)
-	.collect(Collectors.toSet());
+			Set<String> nombresSinDuplicados2 = personas.stream().map(Persona::nombre).collect(Collectors.toSet());
 
 //A continuacion vamos a imprimir los elementos de la coleccion 
 //nombresSinDuplicados2
 
-System.out.println("Set de nombres sin duplicados: ");
-nombresSinDuplicados2.stream().forEach(nombre -> System.out.println(nombre));
+			System.out.println("Set de nombres sin duplicados: ");
+			nombresSinDuplicados2.stream().forEach(nombre -> System.out.println(nombre));
 
-System.out.println("Set de nombres sin duplicados: ");
+			System.out.println("Set de nombres sin duplicados: ");
 
 //nombresSinDuplicados2.stream().forEach(nombre -> System.out.println(nombre));
 
-/* En la sentencia anterior, la expresion lambda lo unico que hace es 
-* llamar al metodo println, por tanto se puede quitar la lambda y pasar el 
-* metodo por referencia 
-* 
-* En las ultimas versiones de Java, no hace falta el metodo stream() si directamente
-* se utiliza una operacion terminal a continuacion del origen de la tuberia
-* */
+			/*
+			 * En la sentencia anterior, la expresion lambda lo unico que hace es llamar al
+			 * metodo println, por tanto se puede quitar la lambda y pasar el metodo por
+			 * referencia
+			 * 
+			 * En las ultimas versiones de Java, no hace falta el metodo stream() si
+			 * directamente se utiliza una operacion terminal a continuacion del origen de
+			 * la tuberia
+			 */
 
-nombresSinDuplicados2.forEach(System.out::println);
+			nombresSinDuplicados2.forEach(System.out::println);
 
-/* OBJECT ORDERING (Ordenamiento de Objetos) 
- * 
- * https://docs.oracle.com/javase/tutorial/collections/interfaces/order.html 
- * 
- * Los algoritmos son una parte integral del framework de colecciones
- * 
- * A continuacion vamos a ver los algoritmos de ordenamiento (sort) implementados
- * en la clase Colleccions
- * 
- * Como ejemplo vamos a ordenar la lista de nombres siguiente segun el Orden 
- * Natural, lexicograficamente de la A a la Z
- * 
- * */
+			/*
+			 * OBJECT ORDERING (Ordenamiento de Objetos)
+			 * 
+			 * https://docs.oracle.com/javase/tutorial/collections/interfaces/order.html
+			 * 
+			 * Los algoritmos son una parte integral del framework de colecciones
+			 * 
+			 * A continuacion vamos a ver los algoritmos de ordenamiento (sort)
+			 * implementados en la clase Colleccions
+			 * 
+			 * Como ejemplo vamos a ordenar la lista de nombres siguiente segun el Orden
+			 * Natural, lexicograficamente de la A a la Z
+			 * 
+			 */
 
-List<String> nombres = Arrays.asList("Miguel", "Angel", 
-"Youssef", "Yodalis", "Elida", "Jakelin", "Juan", "Carlos", "Gina");
+			List<String> nombres = Arrays.asList("Miguel", "Angel", "Youssef", "Yodalis", "Elida", "Jakelin", "Juan",
+					"Carlos", "Gina");
 
-System.out.println("Listado original de nombres: ");
-nombres.forEach(System.out::println);
+			System.out.println("Listado original de nombres: ");
+			nombres.forEach(System.out::println);
 
 //Ordenamiento segun el orden natural (Natural Ordering)
-Collections.sort(nombres);
+			Collections.sort(nombres);
 
-System.out.println("Listado de nombres ordenado, alfabeticamente, lexicograficamente");
-nombres.forEach(System.out::println);
+			System.out.println("Listado de nombres ordenado, alfabeticamente, lexicograficamente");
+			nombres.forEach(System.out::println);
 
+			/*
+			 * Vamos a intentar ordenar la lista de personas ¿Que va a pasar?
+			 * 
+			 * Que no es posible ordenar mi listado de personas, compuesto por elementos que
+			 * son record de Persona, ¿Por que entonces si se pudo ordenar las lista de
+			 * nombres? Rta. Porque todos los tipos de datos de Java implementan la interfaz
+			 * Comparable, mientras que el tipo record Persona creado por nosotros no
+			 * implementa la interfaz Comparable, en resumen, que si no se implementa la
+			 * interfaz Comparable el metodo sort() no tiene medios para comparar los
+			 * elementos del tipo de datos concreto.
+			 * 
+			 * IMPORTANTE!!! El Orden Natural (Natural Ordering) viene dado por la
+			 * implementacion de la interfaz Comparable, y si el tipo de datos no implementa
+			 * dicha interfaz pues NO tiene orden natural, que se podrá ordenar de otra
+			 * manera pero no segun el orden natural * ver la tabla que esta en el link
+			 * suministrado inicialmente:
+			 */
 
-/* Vamos a intentar ordenar la lista de personas 
-* ¿Que va a pasar? 
-* 
-* Que no es posible ordenar mi listado de personas, compuesto por elementos que son
-* record de Persona, ¿Por que entonces si se pudo ordenar las lista de nombres? 
-* Rta. Porque todos los tipos de datos de Java implementan la interfaz Comparable,
-* mientras que el tipo record Persona creado por nosotros no implementa la interfaz
-* Comparable, en resumen, que si no se implementa la interfaz Comparable el metodo
-* sort() no tiene medios para comparar los elementos del tipo de datos concreto.
-* 
-* IMPORTANTE!!! El Orden Natural (Natural Ordering) viene dado por la implementacion
-* de la interfaz Comparable, y si el tipo de datos no implementa dicha interfaz pues 
-* NO tiene orden natural, que se podrá ordenar de otra manera pero no segun 
-* el orden natural
-* * 
-* ver la tabla que esta en el link suministrado inicialmente: */
+			/*
+			 * Se entiende que para ordenar la lista de personas, el tipo de datos de los
+			 * elementos que conforman la lista de personas, que el record Persona tiene que
+			 * implementar, si o si, la interfaz Comparable para que una coleccion de tipo
+			 * record de Persona pueda ser ordenada segun el Orden Natural
+			 */
 
-/* Se entiende que para ordenar la lista de personas, el tipo de datos de 
-* los elementos que conforman la lista de personas, que el record Persona 
-* tiene que implementar, si o si, la interfaz Comparable para que una coleccion
-* de tipo record de Persona pueda ser ordenada segun el Orden Natural */
+			System.out.println("Listado de personas sin ordenar");
+			personas.forEach(System.out::println);
 
-System.out.println("Listado de personas sin ordenar");
-personas.forEach(System.out::println);
+			Collections.sort(personas);
 
-Collections.sort(personas);
+			System.out.println("Listado de personas ordenado segun el ORDEN NATURAL");
+			personas.forEach(System.out::println);
 
-System.out.println("Listado de personas ordenado segun el ORDEN NATURAL");
-personas.forEach(System.out::println);
+			/*
+			 * Imaginate que el Jefe de nuestro Dpto NO necesita ordenar las personas segun
+			 * el ORDEN NATURAL del record Persona, sino que el necesita ordenar la lista de
+			 * personas por el salario, de mayor a menor, es decir, en orden inverso.
+			 * 
+			 * El problema es que en nuestro Dpto NO tenemos el codigo fuente del record
+			 * Persona, para cambiar el ORDEN NATURAL. ¿Que podemos hacer entonces para
+			 * ordenar las personas por el salario SIN modificar el ORDEN NATURAL? *
+			 */
+			/*
+			 * Rta. Por suerte, el metodo sort() de la clase Collections puede recibir un
+			 * segundo parametro que seria el criterio de comparacion, para comparar dos
+			 * personas sin que intervenga el ORDEN NATURAL
+			 */
 
-/* Imaginate que el Jefe de nuestro Dpto NO necesita ordenar las personas
-* segun el ORDEN NATURAL del record Persona, sino que el necesita ordenar
-* la lista de personas por el salario, de mayor a menor, es decir, en orden
-* inverso. 
-* 
-* El problema es que en nuestro Dpto NO tenemos el codigo fuente del record 
-* Persona, para cambiar el ORDEN NATURAL. ¿Que podemos hacer entonces para 
-* ordenar las personas por el salario SIN modificar el ORDEN NATURAL?
-* * */
-/* Rta. Por suerte, el metodo sort() de la clase Collections puede recibir
-* un segundo parametro que seria el criterio de comparacion, para 
-* comparar dos personas sin que intervenga el ORDEN NATURAL */
+			Collections.sort(personas, (p1, p2) -> p1.salario().compareTo(p2.salario()));
 
-Collections.sort(personas, 
-(p1, p2) -> p1.salario().compareTo(p2.salario()));
-
-System.out.println("Listado de personas ordenado segun el comparator por el salario de"
-+ "menor a mayor");
-personas.forEach(System.out::println);
+			System.out.println("Listado de personas ordenado segun el comparator por el salario de" + "menor a mayor");
+			personas.forEach(System.out::println);
 //¿Como hacer para que muestre las personas de mayor salario primero?
 //Rta. En el cuerpo de la lambda cambiando el orden, primero la persona 2 
 //y luego la 1
 
-Collections.sort(personas, 
-(p1, p2) -> p2.salario().compareTo(p1.salario()));
+			Collections.sort(personas, (p1, p2) -> p2.salario().compareTo(p1.salario()));
 
-System.out.println("Listado ordenado de mayor a menor salario");
-personas.forEach(System.out::println);
+			System.out.println("Listado ordenado de mayor a menor salario");
+			personas.forEach(System.out::println);
 
-/* Ejercicio # 1 del Lunes 29 de Junio.
-* 
-* Ordenar la coleccion de personas segun la edad de la persona de mayor a menor,
-* es decir, las personas mayores se muestren primero. */
+			/*
+			 * Ejercicio # 1 del Lunes 29 de Junio.
+			 * 
+			 * Ordenar la coleccion de personas segun la edad de la persona de mayor a
+			 * menor, es decir, las personas mayores se muestren primero.
+			 */
 
-/* Ejercicio # 2 del Lunes 29 de Junio
-* 
-* Ordenar la coleccion de personas primero por el genero y luego por la edad, 
-* mostrando primero las personas mas jovenes de su genero. 
-* */
+			Collections.sort(personas, (p3, p4) -> p4.fechaNacimiento().compareTo(p3.fechaNacimiento()));
+			System.out.println("Listado de personas ordenado segun la edad de la persona de mayor a menor");
+			personas.forEach(System.out::println);
 
-/**
-* Ejercicio # 3 del Lunes 29 de Junio
-* 
-* Recorrer la coleccion de personas y obtener una nueva coleccion con las personas
-* del genero MUJER que nacieron en la segunda quincena del mes de su fecha de 
-* nacimiento.
-*/
+			/*
+			 * Ejercicio # 2 del Lunes 29 de Junio
+			 * 
+			 * Ordenar la coleccion de personas primero por el genero y luego por la edad,
+			 * mostrando primero las personas mas jovenes de su genero.
+			 */
 
-}
+			/*
+			 * Para solucionar el ejercicio deberiamos crear un metodo que nos devuelva la
+			 * edad de la persona, en el record Persona
+			 */
 
+			Collections.sort(personas,
+					Comparator.comparing(Persona::genero, Comparator.nullsFirst(Comparator.naturalOrder()))
+							.thenComparing(Persona::edad).reversed());
 
+			System.out.println("Solucion al ejercicio 2");
+			personas.forEach(System.out::println);
 
+			/**
+			 * Ejercicio # 3 del Lunes 29 de Junio
+			 * 
+			 * Recorrer la coleccion de personas y obtener una nueva coleccion con las
+			 * personas del genero MUJER que nacieron en la segunda quincena del mes de su
+			 * fecha de nacimiento.
+			 */
 
+			List<Persona> personas2 = personas.stream()
+					.filter(p -> p.genero().equals(Genero.MUJER) && p.fechaNacimiento()
+							.with(TemporalAdjusters.lastDayOfMonth()).minusDays(15).isBefore(p.fechaNacimiento()))
+					.collect(Collectors.toList());
+			System.out.println("Solucion ejercicio 3");
+			personas2.forEach(System.out::println);
+		}
 
-	
 	}
-	
+
 }
