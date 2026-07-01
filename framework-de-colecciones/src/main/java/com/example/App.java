@@ -155,7 +155,7 @@ public class App {
 		.min(Comparator.comparing(Persona::salario));
 		
 		if (optionalDePersona.isPresent());
-		//	q	uiere decir que en la "cajita" del Optional esta presente la persona
+		//	quiere decir que en la "cajita" del Optional esta presente la persona
 		//que nes del genero MUJER con el menor salario, por lo tanto, se puede recuperar la persona
 		
 		Persona personaMujerConMenorSalario = optionalDePersona.get();
